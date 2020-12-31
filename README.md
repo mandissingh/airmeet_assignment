@@ -4,6 +4,7 @@ Following application is running using **python flask** framework, it's using **
 
 ## Following repo contains following fles
 - api.py (Contains all the code and logic)
+- requirements.txt (Contains dependencies required by python code)
 - Dockerfile (Dockerfile to build docker image to run python code)
 - docker-compose.yml (docker-compose file to run containers)
 
