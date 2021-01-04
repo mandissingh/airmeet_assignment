@@ -40,16 +40,20 @@ def json_example():
         percentage_cpu_used = req_data['percentage_cpu_used']
         percentage_memory_used = req_data['percentage_memory_used']
         client_ip = request.remote_addr
-        data = {"percentage_memory_used":percentage_memory_used, "percentage_cpu_used":percentage_cpu_used}
+        data = {}
+        if(r.exists(client_ip)):
+            old_value = r.hgetall(client_ip)
+            old_value = { y.decode('ascii'): old_value.get(y).decode('ascii') for y in old_value.keys() }
+            if(int(old_value['percentage_memory_used']) > int(percentage_memory_used)): percentage_memory_used = old_value['percentage_memory_used']
+            if(int(old_value['percentage_cpu_used']) > int(percentage_cpu_used)): percentage_cpu_used = old_value['percentage_cpu_used']
+            data = {"percentage_memory_used":percentage_memory_used, "percentage_cpu_used":percentage_cpu_used}
+        else:
+            data = {"percentage_memory_used":percentage_memory_used, "percentage_cpu_used":percentage_cpu_used}
 
         r.hmset(client_ip, data)
         value = r.hgetall(client_ip)
-        print(value)
-
         return '''
-            client_ip: {}
-            percentage_cpu_used: {}
-            percentage_memory_used: {}'''.format(client_ip, percentage_cpu_used, percentage_memory_used), 200
+            metrics have been inserted''', 200
     except Exception as e:
         print(e)
         return "Something went wrong",500
